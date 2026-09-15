@@ -1,7 +1,7 @@
 # 🎯 Project Goals — Spam Mail Prediction
 
 > **Internship Project | 45-Day Plan**
-> Tracking all planned phases and tasks for the project.
+> Phase-by-phase progress tracker.
 
 ---
 
@@ -10,25 +10,24 @@
 - [x] **Setup & Data Loading**
   - [x] Load dataset from `data/spam.csv`
   - [x] Handle null values
-  - [x] Rename columns to `Category` and `Message`
-  - [x] Explore basic shape and structure of the data
+  - [x] Rename columns (`v1` → `Category`, `v2` → `Message`)
+  - [x] Explore basic shape and structure
 
 - [x] **Baseline Model (Logistic Regression)**
   - [x] TF-IDF vectorization
-  - [x] Train/test split (80/20)
+  - [x] Train/test split (80/20, random_state=3)
   - [x] Logistic Regression training
-  - [x] Accuracy score on training data (~96.70%)
-  - [x] Accuracy score on test data (~96.59%)
-  - [x] Basic predictive system for single message input
+  - [x] Accuracy on training data (~96.70%)
+  - [x] Accuracy on test data (~96.59%)
 
 - [x] **Phase 1: Exploratory Data Analysis (EDA)**
   - [x] Class distribution bar chart and pie chart
-  - [x] Message character count & word count statistics per class
+  - [x] Message character count & word count stats per class
   - [x] Length distribution histograms (spam vs ham)
   - [x] Box plots for length comparison
-  - [x] WordCloud — top words in spam messages
-  - [x] WordCloud — top words in ham messages
-  - [x] Top 20 most frequent words per class (horizontal bar charts)
+  - [x] WordCloud — spam messages
+  - [x] WordCloud — ham messages
+  - [x] Top 20 most frequent words per class
   - [x] Character-level feature engineering:
     - [x] Uppercase ratio
     - [x] Digit count
@@ -36,80 +35,91 @@
     - [x] URL presence flag
     - [x] Currency/reward word flag
   - [x] Correlation heatmap of engineered features vs label
-  - [x] EDA Summary table of all findings
+  - [x] EDA Summary table
 
-- [x] **Project Documentation — First Commit**
-  - [x] `README.md` — GitHub project page
-  - [x] `goals.md` — This file
+- [x] **Phase 2: Advanced Text Preprocessing (NLTK)**
+  - [x] Lowercase conversion
+  - [x] URL removal using regex
+  - [x] Number/digit removal
+  - [x] Punctuation removal
+  - [x] Tokenization
+  - [x] Stopword removal (NLTK English stopwords)
+  - [x] Lemmatization (WordNetLemmatizer)
+  - [x] `clean_text()` pipeline function
+  - [x] TF-IDF with bigrams (`ngram_range=(1,2)`, `max_features=15000`)
+  - [x] Before vs after word count comparison
+
+- [x] **Phase 3: Multi-Model Comparison**
+  - [x] Logistic Regression
+  - [x] Naive Bayes (MultinomialNB)
+  - [x] Linear SVM (LinearSVC)
+  - [x] Random Forest (200 estimators)
+  - [x] Gradient Boosting Classifier
+  - [x] K-Nearest Neighbors
+  - [x] Metrics table (Accuracy, Precision, Recall, F1, ROC-AUC)
+  - [x] Grouped bar chart comparing all models × all metrics
+
+- [x] **Phase 4: Comprehensive Evaluation Metrics**
+  - [x] Classification Report (precision, recall, F1 per class)
+  - [x] Confusion Matrix heatmap with TP/TN/FP/FN labels
+  - [x] False Positive Rate & False Negative Rate analysis
+  - [x] ROC Curves — all 6 models on one chart
+  - [x] Precision-Recall Curves — all 6 models
+  - [x] 5-Fold Cross-Validation with box plots
+
+- [x] **Phase 5: Hyperparameter Tuning**
+  - [x] Sklearn `Pipeline` (TF-IDF → LR)
+  - [x] GridSearchCV over TF-IDF params (`ngram_range`, `max_features`, `min_df`)
+  - [x] GridSearchCV over LR params (`C`, `penalty`)
+  - [x] 5-fold CV scoring (`f1`)
+  - [x] Before vs after metrics comparison bar chart
+
+- [x] **Phase 6: Class Imbalance Handling (SMOTE)**
+  - [x] Visualise class imbalance clearly
+  - [x] Apply SMOTE oversampling
+  - [x] Apply `class_weight='balanced'` in LR
+  - [x] Compare: No balancing vs class_weight vs SMOTE
+  - [x] Before/after class distribution bar charts
+
+- [x] **Phase 7: Model Saving & Deployment Pipeline**
+  - [x] Save full pipeline with `joblib` → `spam_model_pipeline.pkl`
+  - [x] Save vectorizer separately → `vectorizer.pkl`
+  - [x] Save model separately → `model.pkl`
+  - [x] Load model fresh and verify predictions
+  - [x] `predict_email(text)` function (raw text → label + confidence %)
+  - [x] Test on 5 diverse example messages with confidence scores
+  - [x] Colab `files.download()` for local use
+  - [x] Feature importance chart (top 25 spam/ham indicator words from LR coefficients)
+
+- [x] **Project Documentation**
+  - [x] `README.md` — updated for all 7 phases with results table
+  - [x] `goals.md` — this file
 
 ---
 
 ## 🔄 In Progress
 
-- [ ] **Phase 2: Advanced Text Preprocessing (NLTK)**
-  - [ ] Install and import NLTK
-  - [ ] Tokenization of messages
-  - [ ] Stopword removal
-  - [ ] Stemming (PorterStemmer)
-  - [ ] Lemmatization (WordNetLemmatizer)
-  - [ ] Build a `clean_text()` pipeline function
-  - [ ] Compare TF-IDF matrix before and after cleaning
+- [ ] **Phase 8: Streamlit Web Application**
+  - [ ] Create `app.py`
+  - [ ] Text area input for user to paste message
+  - [ ] "Classify" button → Spam / Ham output with emoji
+  - [ ] Confidence score display (probability %)
+  - [ ] Top contributing keywords shown
+  - [ ] Test that `streamlit run app.py` works locally
 
 ---
 
 ## ⬜ Pending
 
-- [ ] **Phase 3: Multi-Model Comparison**
-  - [ ] Naive Bayes (MultinomialNB)
-  - [ ] Support Vector Machine (SVC)
-  - [ ] Random Forest Classifier
-  - [ ] Gradient Boosting (XGBoost)
-  - [ ] K-Nearest Neighbors (KNN)
-  - [ ] Side-by-side metrics comparison table
-  - [ ] Grouped bar chart of all model metrics
-
-- [ ] **Phase 4: Comprehensive Evaluation Metrics**
-  - [ ] Confusion Matrix heatmap (seaborn)
-  - [ ] Classification Report (precision, recall, F1 per class)
-  - [ ] ROC Curve + AUC score
-  - [ ] Precision-Recall Curve
-  - [ ] 5-Fold Cross-Validation scores
-
-- [ ] **Phase 5: Hyperparameter Tuning**
-  - [ ] GridSearchCV on TF-IDF parameters (`ngram_range`, `max_features`, `min_df`, `max_df`)
-  - [ ] GridSearchCV on best model parameters
-  - [ ] Before vs after metrics comparison
-
-- [ ] **Phase 6: Class Imbalance Handling (SMOTE)**
-  - [ ] Show class imbalance clearly
-  - [ ] Apply SMOTE oversampling
-  - [ ] Apply `class_weight='balanced'` in models
-  - [ ] Compare model metrics before vs after balancing
-
-- [ ] **Phase 7: Model Saving & Deployment Pipeline**
-  - [ ] Save best model using `joblib` → `model.pkl`
-  - [ ] Save TF-IDF vectorizer → `vectorizer.pkl`
-  - [ ] Write reusable `predict_email(text)` function
-  - [ ] Demo: load model fresh and classify 5 example emails
-
-- [ ] **Phase 8: Streamlit Web Application**
-  - [ ] Create `app.py`
-  - [ ] Text area input for user message
-  - [ ] Classify button → Spam / Ham output
-  - [ ] Show confidence score (probability %)
-  - [ ] Show top contributing keywords
-  - [ ] Test and verify app runs locally
-
-- [ ] **Phase 9: Feature Importance & Explainability**
-  - [ ] Top spam/ham words from LR/SVM model coefficients
-  - [ ] Horizontal bar chart of feature weights
+- [ ] **Phase 9: Feature Importance & LIME Explainability**
   - [ ] LIME explanation for individual predictions
+  - [ ] Show which words drove a specific classification
 
 - [ ] **Phase 10: Final Documentation**
-  - [ ] Update `README.md` with final results
-  - [ ] Add `requirements.txt`
-  - [ ] Final project summary section in notebook
-  - [ ] Add multi-dataset generalization test (Enron dataset)
+  - [ ] `requirements.txt`
+  - [ ] Final summary section in notebook
+  - [ ] Multi-dataset test (Enron dataset generalization)
+  - [ ] Final README polish
 
 ---
 
@@ -117,17 +127,17 @@
 
 ```
 Phase 1  ████████████████████  100%  ✅ EDA
-Phase 2  ░░░░░░░░░░░░░░░░░░░░    0%  🔄 Text Preprocessing
-Phase 3  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Multi-Model
-Phase 4  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Evaluation Metrics
-Phase 5  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Hyperparameter Tuning
-Phase 6  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ SMOTE
-Phase 7  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Model Saving
-Phase 8  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Streamlit App
+Phase 2  ████████████████████  100%  ✅ Text Preprocessing
+Phase 3  ████████████████████  100%  ✅ Multi-Model
+Phase 4  ████████████████████  100%  ✅ Evaluation Metrics
+Phase 5  ████████████████████  100%  ✅ Hyperparameter Tuning
+Phase 6  ████████████████████  100%  ✅ SMOTE
+Phase 7  ████████████████████  100%  ✅ Model Saving
+Phase 8  ░░░░░░░░░░░░░░░░░░░░    0%  🔄 Streamlit App
 Phase 9  ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Explainability
 Phase 10 ░░░░░░░░░░░░░░░░░░░░    0%  ⬜ Final Docs
 
-Overall: ██░░░░░░░░░░░░░░░░░░   ~12% Complete
+Overall: ██████████████░░░░░░   ~72% Complete
 ```
 
 ---
