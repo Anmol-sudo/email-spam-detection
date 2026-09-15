@@ -1,0 +1,18 @@
+# Streamlit theme + server settings.
+# Applies both locally (`streamlit run app.py`) and on Streamlit Community Cloud.
+
+[theme]
+base = "dark"
+primaryColor = "#4dabf7"
+backgroundColor = "#0f1117"
+secondaryBackgroundColor = "#1a1d27"
+textColor = "#e9ecef"
+font = "sans serif"
+
+[server]
+# The app only reads a local pickle, so there is nothing to upload beyond the
+# batch CSV; cap it to keep memory predictable on the free tier.
+maxUploadSize = 20
+
+[browser]
+gatherUsageStats = false
