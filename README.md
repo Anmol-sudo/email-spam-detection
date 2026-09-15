@@ -258,7 +258,7 @@ production monitoring — spam evolves, so an unretrained model decays.
 
 ## 👨‍💻 Author
 
-**Arjun** — Internship Project, 2026
+**Anmol** — Internship Project, 2026
 Built with Python & Scikit-Learn
 
 ## 📄 License
