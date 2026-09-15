@@ -1,206 +1,266 @@
 # 📧 Spam Mail Prediction using Machine Learning
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3-orange?logo=scikit-learn&logoColor=white)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.6.1-orange?logo=scikit-learn&logoColor=white)
 ![NLTK](https://img.shields.io/badge/NLTK-NLP-green?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Project%20Complete-brightgreen)
+![Tests](https://img.shields.io/badge/tests-30%20passing-brightgreen)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
-> A complete end-to-end Machine Learning project to classify SMS/Email messages as **Spam** or **Ham (Legitimate)** — built as part of a 45-day internship program.
-
----
-
-## 📌 Project Overview
-
-Spam messages are a major problem in digital communication. This project builds a production-ready ML pipeline that:
-
-- **Detects spam** with ~98%+ accuracy using NLP + optimized classifiers
-- **Explains predictions** via feature importance (LR coefficients)
-- **Handles class imbalance** using SMOTE oversampling
-- **Deploys** as a reusable `.pkl` pipeline and (soon) a Streamlit web app
+> An end-to-end Machine Learning project that classifies SMS/email messages as
+> **Spam** or **Ham** (legitimate) — and explains every prediction it makes.
+> Built as a 45-day internship project.
 
 ---
 
-## 📂 Project Structure
+## 📌 What this is
+
+A complete NLP pipeline, not just a notebook:
+
+- **98.03% accuracy / 99.30% ROC-AUC** on 1,115 held-out messages
+- **Six algorithms compared** before choosing Logistic Regression, then tuned
+  across 180 cross-validated fits
+- **Explains itself** — every prediction is broken down word by word using the
+  model's own arithmetic, not an approximation
+- **Deployed** as a Streamlit web app with an adjustable sensitivity threshold
+  and batch CSV scoring
+- **Tested** — 30 automated tests run against the real model without a browser
+
+---
+
+## 🚀 Quick start
+
+```bash
+git clone <your-repo-url>
+cd email-spam-detection
+
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+streamlit run app.py               # → http://localhost:8501
+```
+
+**Other entry points:**
+
+```bash
+python backend.py                  # smoke-test the model, no UI
+pytest -q                          # run the test suite (needs: pip install pytest)
+```
+
+**To re-run the notebook** (training, charts, SMOTE, LIME):
+
+```bash
+pip install -r requirements.txt -r requirements-notebook.txt
+jupyter notebook
+```
+
+Deploying to Streamlit Community Cloud: see
+[`documentation/streamlit_app_guide.md`](documentation/streamlit_app_guide.md).
+
+---
+
+## 📂 Project structure
 
 ```
-spam-mail-prediction/
+email-spam-detection/
+│
+├── app.py                          # Streamlit UI — widgets and layout only
+├── backend.py                      # All inference: loading, cleaning, predicting, explaining
+│
+├── saved_model/
+│   ├── spam_model_pipeline.pkl     # ← the one the app loads (TF-IDF + LogisticRegression)
+│   ├── vectorizer.pkl              # TF-IDF alone, for inspection
+│   └── model.pkl                   # classifier alone, for inspection
 │
 ├── data/
-│   └── spam.csv                          # SMS Spam Collection dataset
+│   └── spam.csv                    # SMS Spam Collection, 5,572 messages
 │
-├── Spam_Mail_Prediction_using_Machine_Learning.ipynb  # Main notebook (all phases)
+├── Spam_Mail_Prediction_using_Machine_Learning.ipynb   # all 10 phases
 │
-├── saved_model/                          # Generated after running Phase 7
-│   ├── spam_model_pipeline.pkl           # Full pipeline (TF-IDF + LR)
-│   ├── vectorizer.pkl                    # TF-IDF vectorizer only
-│   └── model.pkl                         # Logistic Regression model only
+├── tests/
+│   └── test_backend.py             # 30 tests: labels, cleaning, thresholds, explanations
 │
-├── presentation/                         # PPT prompts and speaker scripts
-│   ├── gamma_ai_ppt_prompt.txt
-│   └── ppt_presentation_script.md
+├── documentation/
+│   ├── full_project_explanation.md # deep phase-by-phase walkthrough + interview Q&A
+│   ├── streamlit_app_guide.md      # architecture, deployment, troubleshooting
+│   └── phase_9_10_code_for_notebook.md
 │
-├── documentation/                        # Project explanation
-│   └── full_project_explanation.md
+├── presentation/
+│   ├── gamma_ai_ppt_prompt.txt     # generates the 13-slide deck
+│   └── ppt_presentation_script.md  # timed speaker script + Q&A prep
 │
-├── app.py                                # Streamlit web app (Phase 8)
-├── requirements.txt                      # Dependencies for deployment
-├── goals.md                              # Project goals & progress tracker
-└── README.md                             # This file
+├── .streamlit/config.toml          # theme and server settings
+├── requirements.txt                # app dependencies (kept minimal for cloud deploy)
+├── requirements-notebook.txt       # notebook-only extras (matplotlib, lime, SMOTE, …)
+├── goals.md                        # phase-by-phase progress tracker
+└── README.md
+```
+
+### Why `app.py` and `backend.py` are separate
+
+`backend.py` imports no Streamlit; `app.py` contains no model code. That means
+the inference layer can be unit-tested without a browser, reused behind a REST
+API, and the UI can be redesigned with zero risk to model behaviour.
+
+```
+app.py  ──imports──►  backend.py  ──joblib.load──►  saved_model/spam_model_pipeline.pkl
+(UI only)             (no Streamlit)
 ```
 
 ---
 
 ## 📊 Dataset
 
-| Property          | Value                                                                                                   |
-| ----------------- | ------------------------------------------------------------------------------------------------------- |
-| **Source**        | [SMS Spam Collection — Kaggle (UCI)](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) |
-| **File**          | `data/spam.csv`                                                                                         |
-| **Total Records** | 5,572 messages                                                                                          |
-| **Columns**       | `Category` (spam/ham), `Message` (text)                                                                 |
-| **Spam**          | ~13% (747 messages)                                                                                     |
-| **Ham**           | ~87% (4,825 messages)                                                                                   |
+| Property | Value |
+|---|---|
+| Source | [SMS Spam Collection — Kaggle (UCI)](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) |
+| File | `data/spam.csv` |
+| Messages | 5,572 |
+| Ham | 4,825 (86.6%) |
+| Spam | 747 (13.4%) |
+| Split | 4,457 train / 1,115 test (80/20, `random_state=3`) |
+
+The 86.6/13.4 imbalance drove the whole project: a model that always answers
+"ham" scores 86.6% accuracy and is useless, which is why every result below is
+reported with precision, recall and F1 alongside accuracy.
 
 ---
 
-## 🔬 Project Phases
+## 🔬 Project phases
 
-| Phase        | Title                                    | Status      |
-| ------------ | ---------------------------------------- | ----------- |
-| **Phase 1**  | Exploratory Data Analysis (EDA)          | ✅ Complete |
-| **Phase 2**  | Advanced Text Preprocessing (NLTK)       | ✅ Complete |
-| **Phase 3**  | Multi-Model Comparison (6 classifiers)   | ✅ Complete |
-| **Phase 4**  | Comprehensive Evaluation Metrics         | ✅ Complete |
-| **Phase 5**  | Hyperparameter Tuning (GridSearchCV)     | ✅ Complete |
-| **Phase 6**  | Class Imbalance Handling (SMOTE)         | ✅ Complete |
-| **Phase 7**  | Model Saving & Deployment Pipeline       | ✅ Complete |
-| **Phase 8**  | Streamlit Web Application                | ✅ Complete |
-| **Phase 9**  | Feature Importance & LIME Explainability | ✅ Complete |
-| **Phase 10** | Final Documentation & Report             | ✅ Complete |
+| Phase | Title | What it produced |
+|---|---|---|
+| 1 | Exploratory Data Analysis | Found the imbalance; spam is 2× longer with more caps, digits and links |
+| 2 | Advanced Text Preprocessing (NLTK) | `clean_text()` — lowercase → strip URLs/digits/punctuation → stopwords → lemmatize |
+| 3 | Multi-Model Comparison | 6 classifiers × 5 metrics; Logistic Regression chosen |
+| 4 | Comprehensive Evaluation | Confusion matrix, ROC/PR curves, 5-fold CV |
+| 5 | Hyperparameter Tuning | GridSearchCV, 36 configs × 5 folds = 180 fits |
+| 6 | Class Imbalance (SMOTE) | Measured SMOTE vs `class_weight` vs nothing |
+| 7 | Model Saving | `spam_model_pipeline.pkl` via joblib |
+| 8 | Streamlit Web App | `app.py` + `backend.py` |
+| 9 | Explainability | Coefficient contributions in the app; LIME in the notebook |
+| 10 | Documentation & Tests | This README, the deep-dive docs, the deck, 30 tests |
 
----
-
-## ✅ What's Been Built
-
-### Phase 1 — EDA
-
-- Class distribution (87% Ham / 13% Spam — **imbalanced**)
-- Message length histograms, box plots, WordClouds
-- Top-20 most frequent words per class
-- Character-level feature analysis (uppercase ratio, digit count, URL presence)
-- Correlation heatmap
-
-### Phase 2 — NLTK Text Preprocessing
-
-Custom `clean_text()` pipeline:
-
-```
-Lowercase → Remove URLs → Remove numbers → Remove punctuation
-→ Tokenize → Remove stopwords → Lemmatize (WordNetLemmatizer)
-```
-
-TF-IDF with **bigrams** (`ngram_range=(1,2)`) captures phrases like _"free entry"_, _"call now"_, _"win prize"_.
-
-### Phase 3 — 6-Model Comparison
-
-| Model               | F1-Score  | ROC-AUC   |
-| ------------------- | --------- | --------- |
-| Logistic Regression | ~0.97     | ~0.99     |
-| Naive Bayes         | ~0.96     | ~0.99     |
-| **Linear SVM**      | **~0.98** | **~0.99** |
-| Random Forest       | ~0.97     | ~0.99     |
-| Gradient Boosting   | ~0.96     | ~0.99     |
-| KNN                 | ~0.91     | ~0.97     |
-
-### Phase 4 — Evaluation
-
-- Confusion matrix with TP/TN/FP/FN breakdown
-- ROC curves + AUC for all 6 models on one chart
-- Precision-Recall curves
-- 5-fold cross-validation box plots
-
-### Phase 5 — Hyperparameter Tuning
-
-GridSearchCV over:
-
-- TF-IDF: `ngram_range`, `max_features`, `min_df`
-- LR: `C`, `penalty`
-
-### Phase 6 — SMOTE
-
-- Applied `SMOTE` to balance training classes
-- Compared: No balancing vs `class_weight='balanced'` vs SMOTE
-
-### Phase 7 — Deployment Pipeline
-
-- `best_tuned` pipeline saved with `joblib`
-- `predict_email(text)` function — raw text in, prediction + confidence out
-- Feature importance bar chart from LR coefficients (top 25 spam/ham indicator words)
+Full technical walkthrough with code, reasoning and interview questions:
+[`documentation/full_project_explanation.md`](documentation/full_project_explanation.md).
 
 ---
 
-## 🚀 How to Run
+## 📈 Results
 
-### Google Colab (Recommended)
+Measured on the 1,115 messages held out from training:
 
-1. Open [Google Colab](https://colab.research.google.com/)
-2. Upload the notebook `.ipynb`
-3. Upload the `data/` folder to `/content/data/`
-4. Click **Runtime → Run All**
+| Metric | Value |
+|---|---|
+| **Accuracy** | **98.03%** |
+| **ROC-AUC** | **99.30%** |
+| Spam precision | 97.84% |
+| Spam recall | 87.74% |
+| Spam F1 | 92.52% |
 
-> **Install missing libraries** (first cell handles this):
->
-> ```python
-> !pip install imbalanced-learn -q
-> ```
+**Confusion matrix**
 
-### Local (Jupyter)
+|  | Predicted Spam | Predicted Ham |
+|---|---|---|
+| **Actually Spam** (155) | 136 ✅ | 19 ❌ missed |
+| **Actually Ham** (960) | 3 ❌ false alarms | 957 ✅ |
 
-```bash
-git clone https://github.com/YOUR_USERNAME/spam-mail-prediction.git
-cd spam-mail-prediction
-pip install -r requirements.txt
-jupyter notebook
+> **The honest reading:** only 3 of 960 legitimate messages were wrongly flagged
+> — but 19 of 155 spam messages got through. Spam recall is **87.7%**, not 98%.
+> Accuracy is flattered by the easy ham majority, which is exactly why it is
+> never quoted on its own here.
+
+### The threshold trade-off
+
+The model outputs a probability; turning it into a verdict needs a cut-off, and
+the app exposes it as a slider instead of hiding it in a constant:
+
+| Threshold | Accuracy | Spam recall | Spam precision | Good mail flagged | Spam missed |
+|---|---|---|---|---|---|
+| 0.20 | 97.85% | **94.19%** | 90.68% | 15 | 9 |
+| 0.35 | 98.03% | 90.32% | 95.24% | 7 | 15 |
+| **0.50** (default) | **98.03%** | 87.74% | **97.84%** | **3** | 19 |
+| 0.70 | 97.22% | 81.29% | 98.44% | 2 | 29 |
+
+### The final model
+
+```python
+Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=20000, ngram_range=(1, 2),
+                              stop_words='english')),
+    ('clf',   LogisticRegression(C=10.0, max_iter=1000, penalty='l2')),
+])
 ```
 
----
+Strongest learned signals — the model rediscovered SMS spam vocabulary with no
+prompting:
 
-## 🛠️ Tech Stack
-
-| Tool                 | Purpose                                    |
-| -------------------- | ------------------------------------------ |
-| Python 3.10+         | Core language                              |
-| Pandas & NumPy       | Data manipulation                          |
-| Matplotlib & Seaborn | Visualisation                              |
-| WordCloud            | Word frequency plots                       |
-| NLTK                 | Tokenization, stopwords, lemmatization     |
-| Scikit-learn         | TF-IDF, 6 ML models, GridSearchCV, metrics |
-| imbalanced-learn     | SMOTE oversampling                         |
-| Joblib               | Model serialization                        |
-| Streamlit            | Web app _(Phase 8)_                        |
+| Spam indicators (negative coefficients) | Ham indicators (positive) |
+|---|---|
+| txt (−9.12), claim (−7.71), mobile (−7.68), service (−6.75), reply (−6.61), prize (−5.80), win (−5.01), free (−4.77), urgent (−4.50), cash (−4.47) | ok (+3.92), home (+2.94), road (+2.86), say (+2.69), later (+2.60), good (+2.52), way (+2.42) |
 
 ---
 
-## 📈 Final Results
+## 🖥️ What the app does
 
-| Metric        | Baseline LR | Tuned Pipeline |
-| ------------- | ----------- | -------------- |
-| **Accuracy**  | 96.59%      | ~98%+          |
-| **Precision** | ~98%        | ~99%           |
-| **Recall**    | ~90%        | ~96%           |
-| **F1-Score**  | ~94%        | ~97%+          |
-| **ROC-AUC**   | ~99%        | ~99%+          |
+| Tab | Contents |
+|---|---|
+| **Classify** | Single message → verdict, confidence, probability bars, per-word contribution chart, message signals, cleaned-text inspector, session history |
+| **Batch check** | Paste a list or upload a CSV, score everything, download results |
+| **Model insights** | Live test-set metrics, threshold trade-off table, global learned coefficients |
+| **How it works** | Pipeline diagram, architecture notes, honest limitations |
+
+The sidebar carries the sensitivity slider plus a model-status panel that warns
+if the running scikit-learn ever drifts from the 1.6.1 the pickle was written
+with, or if NLTK corpora had to fall back to the built-in cleaner.
+
+---
+
+## 🛠️ Tech stack
+
+| Tool | Purpose |
+|---|---|
+| Python 3.10+ | Core language |
+| scikit-learn **1.6.1** (pinned) | TF-IDF, 6 models, GridSearchCV, metrics |
+| NLTK | Stopwords, WordNet lemmatization |
+| pandas / NumPy | Data manipulation |
+| Streamlit | Web app |
+| joblib | Model serialization |
+| pytest | Test suite |
+| matplotlib / seaborn / wordcloud | Notebook charts *(notebook only)* |
+| imbalanced-learn | SMOTE *(notebook only)* |
+| LIME | Model-agnostic explanations *(notebook only)* |
+
+> **Why scikit-learn is pinned:** a pickle stores structure, not code. Loading
+> the model under a different version raises `InconsistentVersionWarning` and can
+> silently change predictions, so the version is fixed and checked at runtime.
+
+---
+
+## ⚠️ Known limitations
+
+1. Trained on UK SMS text from around 2005 — modern email spam, other languages
+   and emoji-heavy messages are out of distribution.
+2. Bag-of-words has no sense of word order; "not free" and "free not" are
+   identical to it. Bigrams only partly compensate.
+3. Deliberately obfuscated spam (`F.R.E.E`, `pr1ze`) slips straight through.
+4. 12% of spam gets past the default threshold — the slider trades that against
+   false alarms, but cannot eliminate it.
+5. Only the 20,000 terms seen during training carry weight; the app shows which
+   of your words were ignored.
+
+**Next steps:** fine-tune DistilBERT for word order, retrain on a modern corpus
+(Enron / current phishing sets), add character n-grams for obfuscation, and add
+production monitoring — spam evolves, so an unretrained model decays.
 
 ---
 
 ## 👨‍💻 Author
 
-**Arjun** — Internship Project, 2026  
-Built with ❤️ using Python & Scikit-Learn
-
----
+**Arjun** — Internship Project, 2026
+Built with Python & Scikit-Learn
 
 ## 📄 License
 
-Open source under the [MIT License](LICENSE).
+Open source under the MIT License.

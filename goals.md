@@ -37,6 +37,17 @@
   - [x] Create `requirements.txt` for deployment
   - [x] Final README polish
 
+- [x] **Phase 11: Production Hardening (pre-deployment)**
+  - [x] Split inference out of the UI into `backend.py`
+  - [x] Fix the model path so the app starts outside Colab
+  - [x] Pin `scikit-learn==1.6.1` to match the pickle; warn at runtime on drift
+  - [x] Split notebook-only deps into `requirements-notebook.txt`
+  - [x] Fall back gracefully when NLTK corpora cannot be downloaded
+  - [x] Add adjustable decision threshold, batch CSV scoring, model-insights tab
+  - [x] Add `tests/test_backend.py` (30 tests, all passing)
+  - [x] Add `documentation/streamlit_app_guide.md` (deployment + troubleshooting)
+  - [x] Verify the app end-to-end in a browser before deploying
+
 ---
 
 ## 📊 Progress Tracker
@@ -52,6 +63,7 @@ Phase 7  ████████████████████  100%  ✅
 Phase 8  ████████████████████  100%  ✅ Streamlit App
 Phase 9  ████████████████████  100%  ✅ Explainability
 Phase 10 ████████████████████  100%  ✅ Final Docs
+Phase 11 ████████████████████  100%  ✅ Production Hardening
 
 Overall: ████████████████████  100% Complete
 ```
