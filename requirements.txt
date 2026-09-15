@@ -1,18 +1,11 @@
-# ── Runtime dependencies for the Streamlit app (app.py + backend.py) ─────────
-# Keep this file minimal: Streamlit Community Cloud installs it on every boot,
-# and each extra package is extra build time and one more thing that can break.
-# Notebook-only libraries (matplotlib, seaborn, wordcloud, lime, imbalanced-learn)
-# live in requirements-notebook.txt instead.
-
-streamlit>=1.40,<2
-
-# PINNED ON PURPOSE: saved_model/spam_model_pipeline.pkl was written by
-# scikit-learn 1.6.1. Loading it under a different version raises
-# InconsistentVersionWarning and can silently change predictions.
-scikit-learn==1.6.1
-
-pandas>=2.0,<4
-numpy>=1.26,<3
-scipy>=1.11
-joblib>=1.3
-nltk>=3.8
+streamlit==1.35.0
+scikit-learn==1.4.2
+pandas==2.2.2
+numpy==1.26.4
+nltk==3.8.1
+imbalanced-learn==0.12.3
+lime==0.2.0.1
+joblib==1.4.2
+matplotlib==3.8.4
+seaborn==0.13.2
+wordcloud==1.9.3
