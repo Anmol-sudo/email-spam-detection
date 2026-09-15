@@ -1,0 +1,12 @@
+streamlit
+scikit-learn
+pandas
+numpy
+nltk
+imbalanced-learn
+lime
+joblib
+matplotlib
+seaborn
+wordcloud
+
